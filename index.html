@@ -1,1 +1,66 @@
-Hello World
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Excel Proof of Concept</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <h2>Proof of Concept: Misuga Crew History List Excel Sorter/Filter</h1>
+    <p>
+      A Proof of Concept web app that reads exported Excel file from BTS
+      Clearview's Crew History List Module.
+    </p>
+    <p><b>How to use:</b>
+    <p></p>1. Login to ClearView.
+    <p></p>2. Go to Reports > Basic Reports > Crew History List Module.
+    <p></p>3. Select Fleet and Rank Filters.
+    <p></p>4. Click "Export to Excel". An excel file should be downloaded afterwards.
+    <p></p>5. Open the Misuga-PoC-ExcelSort website.
+    <p></p>6. Upload exported excel file. Once uplaoded, the website will read the excel file.
+    <p></p>7. Set the Start/End Date, Employment Status, and Vessel Type filters.
+    <p></p>8. Click "Filter" button to show results.
+    <p></p>9. Click "Clear Filters" button to reset filters and show the original, unfiltered excel file.
+    <br> 
+    <p><b>Note: Once "Filter" button is clicked, the website will only show results based on the specified filters. Furthermore, based on the selected Vessel type filter, that column will be highlighted with a distinct green color that gets lighter (until it's not visible) as the numbers go from highest (experienced) to lowest (inexperienced).</b></p>
+    <hr />
+    <input type="file" id="fileInput" accept=".xlsx, .xls" />
+    <br />
+    <label for="startDate">Start Date:</label>
+    <input type="date" id="startDate" />
+    <label for="endDate">End Date:</label>
+    <input type="date" id="endDate" />
+    <br />
+    <label for="vesselColumn">Vessel Type (Sorted in Descending order):</label>
+    <select id="vesselColumn">
+      <option value="null">All</option>
+      <option value="8">Misuga - This Rk</option>
+      <option value="9">Misuga - All Rk</option>
+      <option value="10">Cape - This Rk</option>
+      <option value="11">Cape - All Rk</option>
+      <option value="12">P-Max - This Rk</option>
+      <option value="13">P-Max - All Rk</option>
+      <option value="14">Log - This Rk</option>
+      <option value="15">Log - All Rk</option>
+      <option value="16">WD Chip - This Rk</option>
+      <option value="17">WD Chip - All Rk</option>
+    </select>
+    <br />
+    <label for="statusColumn"
+      >Employment Status (Sorted in Descending order):</label
+    >
+    <select id="statusColumn">
+      <option value="null">All</option>
+      <option value="ON BOARD">On Board</option>
+      <option value="FOR APPROVAL">For Approval</option>
+      <option value="LINE-UP">Line Up</option>
+      <option value="VACATION">Vacation</option>
+    </select>
+    <button id="filterButton">Filter</button>
+    <button id="resetButton">Clear Filters</button>
+    <table id="dataTable"></table>
+    <script src="javascript.js"></script>
+  </body>
+</html>
