@@ -1,49 +1,43 @@
 let originalData = [];
-document
-  .getElementById("fileInput")
-  .addEventListener("change", handleFileSelect, false);
-document
-  .getElementById("filterButton")
-  .addEventListener("click", filterData, false);
-document
-  .getElementById("resetButton")
-  .addEventListener("click", resetData, false);
+
+document.getElementById("fileInput").addEventListener("change", handleFileSelect, false);
+document.getElementById("filterButton").addEventListener("click", filterData, false);
+document.getElementById("resetButton").addEventListener("click", resetData, false);
 
 function handleFileSelect(event) {
   const file = event.target.files[0];
+
   if (!file) {
     return;
   }
+
   const reader = new FileReader();
+
   reader.onload = function (e) {
     const data = new Uint8Array(e.target.result);
     const workbook = XLSX.read(data, { type: "array" });
     const firstSheetName = workbook.SheetNames[0];
     const worksheet = workbook.Sheets[firstSheetName];
-    let jsonRaw = XLSX.utils
-      .sheet_to_json(worksheet, { header: 1, raw: false, defval: "" })
-      .filter((row) => row.some((cell) => cell !== ""));
+    let jsonRaw = XLSX.utils.sheet_to_json(worksheet, { header: 1, raw: false, defval: "" }).filter((row) => row.some((cell) => cell !== ""));
+
     if (jsonRaw.length < 3) {
       return;
     }
+
     const baseHeaders = jsonRaw[1];
     const subHeaders = jsonRaw[2]; 
     let finalHeaders = [];
     let currentParent = "";
+
     baseHeaders.forEach((col, index) => {
       if (col.trim() !== "") {
         currentParent = col.trim();
       }
-      const mergedHeader = subHeaders[index]
-        ? `${currentParent} - ${subHeaders[index]}`.trim()
-        : currentParent;
-      finalHeaders.push(mergedHeader);
-    });
-    const dataRows = jsonRaw
-      .slice(3)
-      .filter((row) => Object.values(row).some((cell) => cell !== ""));
-    const jsonData = dataRows.map((row) => {
-      let obj = {};
+
+      const mergedHeader = subHeaders[index]? `${currentParent} - ${subHeaders[index]}`.trim(): currentParent; finalHeaders.push(mergedHeader);});
+      const dataRows = jsonRaw.slice(3).filter((row) => Object.values(row).some((cell) => cell !== ""));
+      const jsonData = dataRows.map((row) => {
+        let obj = {};
       finalHeaders.forEach((header, i) => {
         obj[header] = row[i] || "";
       });
@@ -57,9 +51,11 @@ function handleFileSelect(event) {
 
 function updateResultsInfo(filteredData) {
   const resultInfo = document.getElementById("resultInfo");
+
   if (!filteredData || filteredData.length === 0) {
     resultInfo.textContent = `Found 0 records based on filters, out of ${originalData.length} total records.`;
-  } else {
+  } 
+  else {
     resultInfo.textContent = `Found ${filteredData.length} records based on filters, out of ${originalData.length} total records.`;
   }
 }
@@ -67,13 +63,12 @@ function updateResultsInfo(filteredData) {
 function filterData() {
   const table = document.getElementById("dataTable");
   table.innerHTML = "";
+  
   if (!originalData || originalData.length === 0) {
-    table.innerHTML = `<tr>
-      <td colspan='100%' style='border: 2px solid red; text-align: center; padding: 10px'>
-        No Excel file uploaded. Please upload a file before filtering.
-      </td></tr>`;
+    table.innerHTML = `<tr><td colspan='100%' style='border: 2px solid red; text-align: center; padding: 10px'>No Excel file uploaded. Please upload a file before filtering.</td></tr>`;
     return;
   }
+
   const startDateInput = document.getElementById("startDate").value;
   const endDateInput = document.getElementById("endDate").value;
   const vesselColumnIndex = document.getElementById("vesselColumn").value;
@@ -81,11 +76,10 @@ function filterData() {
   const startDate = startDateInput ? new Date(startDateInput) : null;
   const endDate = endDateInput ? new Date(endDateInput) : null;
   let filteredData = originalData;
+  
   if (startDate && endDate) {
     filteredData = filteredData.filter((row) => {
-      let dateValue = row["1st Employ"]
-        ? convertExcelDate(row["1st Employ"])
-        : null;
+      let dateValue = row["1st Employ"] ? convertExcelDate(row["1st Employ"]) : null;
       return dateValue && dateValue >= startDate && dateValue <= endDate;
     });
   }
@@ -105,7 +99,8 @@ function filterData() {
       return valB - valA;
     });
     displayDataWithColor(filteredData, vesselColumn);
-  } else {
+  } 
+  else {
     displayData(filteredData);
   }
 }
@@ -115,11 +110,9 @@ function resetData() {
   document.getElementById("endDate").value = "";
   document.getElementById("vesselColumn").value = "null";
   document.getElementById("statusColumn").value = "null";
+
   if (!originalData || originalData.length === 0) {
-    document.getElementById("dataTable").innerHTML = `<tr>
-      <td colspan='100%' style='border: 2px solid red; text-align: center; padding: 10px'>
-        No Excel file uploaded. Please upload a file before filtering.
-      </td></tr>`;
+    document.getElementById("dataTable").innerHTML = `<tr><td colspan='100%' style='border: 2px solid red; text-align: center; padding: 10px'>No Excel file uploaded. Please upload a file before filtering.</td></tr>`;
     return;
   }
   displayData(originalData);
@@ -131,6 +124,7 @@ function convertExcelDate(value) {
     const utcValue = utcDays * 86400;
     return new Date(utcValue * 1000);
   }
+
   const date = new Date(value);
   return isNaN(date) ? null : date;
 }
@@ -138,6 +132,7 @@ function convertExcelDate(value) {
 function formatDate(value) {
   if (!value) return "";
   let date = new Date(value);
+
   if (isNaN(date)) {
     date = convertExcelDate(value);
   }
@@ -154,6 +149,7 @@ function displayData(data) {
   updateResultsInfo(data);
   const table = document.getElementById("dataTable");
   table.innerHTML = "";
+  
   if (!data || data.length === 0) {
     table.innerHTML = `<tr>
       <td colspan='100%' style='border: 2px solid red; text-align: center; padding: 10px'>
@@ -161,6 +157,7 @@ function displayData(data) {
       </td></tr>`;
     return;
   }
+
   const headerRow = document.createElement("tr");
   Object.keys(data[0]).forEach((header) => {
     const th = document.createElement("th");
@@ -175,10 +172,10 @@ function displayData(data) {
 
       if (key.toLowerCase().includes("date") || key.toLowerCase().includes("employ") || key.toLowerCase().includes("birthday")) {
         td.textContent = formatDate(row[key]);
-      } else {
+      } 
+      else {
         td.textContent = row[key];
       }
-
       tr.appendChild(td);
     });
     table.appendChild(tr);
@@ -189,30 +186,33 @@ function displayDataWithColor(data, vesselColumn) {
   updateResultsInfo(data);
   const table = document.getElementById("dataTable");
   table.innerHTML = "";
+  
   if (!data || data.length === 0) {
-    table.innerHTML = `<tr>
-      <td colspan='100%' style='border: 2px solid red; text-align: center; padding: 10px'>
-        No records found.
-      </td></tr>`;
+    table.innerHTML = `<tr><td colspan='100%' style='border: 2px solid red; text-align: center; padding: 10px'>No records found.</td></tr>`;
     return;
   }
-  const maxValue = Math.max(
-    ...data.map((row) => parseFloat(row[vesselColumn]) || 0)
-  );
+
+  const maxValue = Math.max(...data.map((row) => parseFloat(row[vesselColumn]) || 0));
   const headerRow = document.createElement("tr");
+  
   Object.keys(data[0]).forEach((header) => {
     const th = document.createElement("th");
     th.textContent = header;
     headerRow.appendChild(th);
   });
+  
   table.appendChild(headerRow);
+  
   data.forEach((row) => {
     const tr = document.createElement("tr");
+    
     Object.keys(row).forEach((key) => {
       const td = document.createElement("td");
+      
       if (key.toLowerCase().includes("date") || key.toLowerCase().includes("employ") || key.toLowerCase().includes("birthday")) {
         td.textContent = formatDate(row[key]);
-      } else {
+      } 
+      else {
         td.textContent = row[key];
       }
       if (key === vesselColumn) {

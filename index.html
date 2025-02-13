@@ -10,53 +10,23 @@
   <body>
     <section name="InfoSection">
       <h2>Proof of Concept: Misuga Crew History List Excel Sorter/Filter</h2>
-      <p>
-        A Proof of Concept web app that reads exported Excel file from BTS
-        Clearview's Crew History List Module.
-      </p>
+      <p>A Proof of Concept web app that reads exported Excel file from BTS Clearview's Crew History List Module.</p>
       <p><b>How to use:</b></p>
-      <p></p>
-      1. Login to ClearView.
-      <p></p>
-      2. Go to Reports > Basic Reports > Crew History List Module.
-      <p></p>
-      3. Select Fleet and Rank Filters.
-      <p></p>
-      4. Click "Export to Excel". An excel file should be downloaded afterwards.
-      <p></p>
-      5. Open the Misuga-PoC-ExcelSort website.
-      <p></p>
-      6. Upload exported excel file. Once uplaoded, the website will read the
-      excel file.
-      <p></p>
-      7. Set the Start/End Date, Employment Status, and Vessel Type filters.
-      <p></p>
-      8. Click "Filter" button to show results.
-      <p></p>
-      9. Click "Clear Filters" button to reset filters and show the original,
-      unfiltered excel file.
-      <br />
-      <p>
-        <b
-          >Note: Once "Filter" button is clicked, the website will only show
-          results based on the specified filters.
-        </b>
-      </p>
-      <p>
-        <b
-          >Note: When Vessel type filter is specified, it will be sorted in
-          descending order denoting their experience - higher means experienced,
-          lower means lesser experience on that vessel type. Also, that column
-          will be highlighted to easily distinguish data from other vessel types
-          and other data.
-        </b>
-      </p>
-      <p>
-        <b
-          >Note: Fleet and Rank are not included in this website's filter. Use
-          Clearview's Crew History List Module filters instead.</b
-        >
-      </p>
+      <p>1. Login to ClearView.</p>
+      <p>2. Go to Reports > Basic Reports > Crew History List Module.</p>
+      <p>3. Select Fleet and Rank Filters.</p>
+      <p>4. Click "Export to Excel". An excel file should be downloaded afterwards.</p>
+      <p>5. Open the exported excel file on Microsoft Excel.</p>
+      <p>6. Click "Yes" to open it anyway.</p>
+      <p>7. Click File > Save As > XLSX file.</p>
+      <p>8. Open the <a href="https://heisenborgar.github.io/">Misuga-PoC-ExcelSort website.</a></p>
+      <p>9. Upload exported excel file. Once uploaded, the website will read the excel file.</p>
+      <p>10. Set the Start/End Date, Employment Status, and Vessel Type filters.</p>
+      <p>11. Click "Filter" button to show results.</p>
+      <p>12. Click "Clear Filters" button to reset filters and show the original,unfiltered excel file.</p>
+      <p><b>Note: Once "Filter" button is clicked, the website will only show results based on the specified filters.</b></p>
+      <p><b>Note: When Vessel type filter is specified, it will be sorted in descending order denoting their experience - higher means experienced, lower means lesser experience on that vessel type. Also, that column will be highlighted to easily distinguish data from other vessel types and other data.</b></p>
+      <p><b>Note: Fleet and Rank are not included in this website's filter. Use Clearview's Crew History List Module filters instead.</b></p>
       <hr />
     </section>
     <section name="InputSection">
@@ -67,9 +37,7 @@
       <label for="endDate">End Date:</label>
       <input type="date" id="endDate" />
       <br />
-      <label for="vesselColumn"
-        >Vessel Type (Sorted in Descending order):</label
-      >
+      <label for="vesselColumn">Vessel Type (Sorted in Descending order):</label>
       <select id="vesselColumn">
         <option value="null">All</option>
         <option value="8">Misuga - This Rk</option>
