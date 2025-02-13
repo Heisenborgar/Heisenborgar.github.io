@@ -75,32 +75,36 @@ function filterData() {
   const statusFilter = document.getElementById("statusColumn").value;
   const startDate = startDateInput ? new Date(startDateInput) : null;
   const endDate = endDateInput ? new Date(endDateInput) : null;
-  let filteredData = originalData;
   
+  let filteredData = originalData;
+
   if (startDate && endDate) {
     filteredData = filteredData.filter((row) => {
       let dateValue = row["1st Employ"] ? convertExcelDate(row["1st Employ"]) : null;
-      return dateValue && dateValue >= startDate && dateValue <= endDate;
+      return !dateValue || (dateValue >= startDate && dateValue <= endDate);
     });
   }
+
   if (statusFilter !== "null") {
     filteredData = filteredData.filter((row) => {
       let cellValue = (row["Employment Status"] || "").trim().toUpperCase();
       return cellValue === statusFilter.toUpperCase();
     });
   }
+
   if (vesselColumnIndex !== "null") {
     const columnKeys = Object.keys(originalData[0]);
     const vesselColumn = columnKeys[parseInt(vesselColumnIndex)];
     filteredData = filteredData.filter(row => parseFloat(row[vesselColumn]) > 0);
+    
     filteredData.sort((a, b) => {
       const valA = parseFloat(a[vesselColumn]) || 0;
       const valB = parseFloat(b[vesselColumn]) || 0;
       return valB - valA;
     });
+
     displayDataWithColor(filteredData, vesselColumn);
-  } 
-  else {
+  } else {
     displayData(filteredData);
   }
 }
