@@ -39,10 +39,22 @@
       <p>
         <b
           >Note: Once "Filter" button is clicked, the website will only show
-          results based on the specified filters. Furthermore, based on the
-          selected Vessel type filter, that column will be highlighted with a
-          distinct green color that gets lighter (until it's not visible) as the
-          numbers go from highest (experienced) to lowest (inexperienced).</b
+          results based on the specified filters.
+        </b>
+      </p>
+      <p>
+        <b
+          >Note: When Vessel type filter is specified, it will be sorted in
+          descending order denoting their experience - higher means experienced,
+          lower means lesser experience on that vessel type. Also, that column
+          will be highlighted to easily distinguish data from other vessel types
+          and other data.
+        </b>
+      </p>
+      <p>
+        <b
+          >Note: Fleet and Rank are not included in this website's filter. Use
+          Clearview's Crew History List Module filters instead.</b
         >
       </p>
       <hr />
@@ -60,16 +72,16 @@
       >
       <select id="vesselColumn">
         <option value="null">All</option>
-        <option value="9">Misuga - This Rk</option>
-        <option value="10">Misuga - All Rk</option>
-        <option value="11">Cape - This Rk</option>
-        <option value="12">Cape - All Rk</option>
-        <option value="13">P-Max - This Rk</option>
-        <option value="14">P-Max - All Rk</option>
-        <option value="15">Log - This Rk</option>
-        <option value="16">Log - All Rk</option>
-        <option value="17">WD Chip - This Rk</option>
-        <option value="18">WD Chip - All Rk</option>
+        <option value="8">Misuga - This Rk</option>
+        <option value="9">Misuga - All Rk</option>
+        <option value="10">Cape - This Rk</option>
+        <option value="11">Cape - All Rk</option>
+        <option value="12">P-Max - This Rk</option>
+        <option value="13">P-Max - All Rk</option>
+        <option value="14">Log - This Rk</option>
+        <option value="15">Log - All Rk</option>
+        <option value="16">WD Chip - This Rk</option>
+        <option value="17">WD Chip - All Rk</option>
       </select>
       <br />
       <label for="statusColumn">Employment Status:</label>
@@ -84,6 +96,9 @@
       <button id="resetButton">Clear Filters</button>
     </section>
     <section name="tableSection">
+      <hr />
+      <p id="resultInfo" style="font-weight: bold; margin-top: 10px"></p>
+      <p>C.S ◼ S.S ◆ C.C ▲</p>
       <table id="dataTable"></table>
     </section>
     <script src="javascript.js"></script>

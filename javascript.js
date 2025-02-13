@@ -12,7 +12,6 @@ document
 function handleFileSelect(event) {
   const file = event.target.files[0];
   if (!file) {
-    //console.log("No file selected.");
     return;
   }
   const reader = new FileReader();
@@ -24,9 +23,7 @@ function handleFileSelect(event) {
     let jsonRaw = XLSX.utils
       .sheet_to_json(worksheet, { header: 1, raw: false, defval: "" })
       .filter((row) => row.some((cell) => cell !== ""));
-    // console.log("Raw Data Before Processing:", jsonRaw);
     if (jsonRaw.length < 3) {
-      // console.error("Not enough rows in the Excel file.");
       return;
     }
     const baseHeaders = jsonRaw[1];
@@ -42,11 +39,9 @@ function handleFileSelect(event) {
         : currentParent;
       finalHeaders.push(mergedHeader);
     });
-    // console.log("Corrected Headers:", finalHeaders);
     const dataRows = jsonRaw
       .slice(3)
-      .filter((row) => Object.values(row).some((cell) => cell !== "")); // Skip empty rows
-    // console.log("Parsed Data Before Assignment:", dataRows);
+      .filter((row) => Object.values(row).some((cell) => cell !== ""));
     const jsonData = dataRows.map((row) => {
       let obj = {};
       finalHeaders.forEach((header, i) => {
@@ -54,39 +49,19 @@ function handleFileSelect(event) {
       });
       return obj;
     });
-    // console.log("Final JSON Data (Corrected Alignment):", jsonData);
     originalData = jsonData;
     displayData(originalData);
   };
   reader.readAsArrayBuffer(file);
 }
 
-function displayData(data) {
-  const table = document.getElementById("dataTable");
-  table.innerHTML = "";
-  if (!data || data.length === 0) {
-    table.innerHTML = `<tr>
-      <td colspan='100%' style='border: 2px solid red; text-align: center; padding: 10px'>
-        No records found.
-      </td></tr>`;
-    return;
+function updateResultsInfo(filteredData) {
+  const resultInfo = document.getElementById("resultInfo");
+  if (!filteredData || filteredData.length === 0) {
+    resultInfo.textContent = `Found 0 records based on filters, out of ${originalData.length} total records.`;
+  } else {
+    resultInfo.textContent = `Found ${filteredData.length} records based on filters, out of ${originalData.length} total records.`;
   }
-  const headerRow = document.createElement("tr");
-  Object.keys(data[0]).forEach((header) => {
-    const th = document.createElement("th");
-    th.textContent = header;
-    headerRow.appendChild(th);
-  });
-  table.appendChild(headerRow);
-  data.forEach((row) => {
-    const tr = document.createElement("tr");
-    Object.values(row).forEach((cell) => {
-      const td = document.createElement("td");
-      td.textContent = cell;
-      tr.appendChild(td);
-    });
-    table.appendChild(tr);
-  });
 }
 
 function filterData() {
@@ -103,7 +78,6 @@ function filterData() {
   const endDateInput = document.getElementById("endDate").value;
   const vesselColumnIndex = document.getElementById("vesselColumn").value;
   const statusFilter = document.getElementById("statusColumn").value;
-  //console.log("Vessel Column Index Selected:", vesselColumnIndex);
   const startDate = startDateInput ? new Date(startDateInput) : null;
   const endDate = endDateInput ? new Date(endDateInput) : null;
   let filteredData = originalData;
@@ -124,54 +98,16 @@ function filterData() {
   if (vesselColumnIndex !== "null") {
     const columnKeys = Object.keys(originalData[0]);
     const vesselColumn = columnKeys[parseInt(vesselColumnIndex)];
+    filteredData = filteredData.filter(row => parseFloat(row[vesselColumn]) > 0);
     filteredData.sort((a, b) => {
       const valA = parseFloat(a[vesselColumn]) || 0;
       const valB = parseFloat(b[vesselColumn]) || 0;
       return valB - valA;
     });
-    // console.log("Sorted Data on column", vesselColumn, filteredData);
     displayDataWithColor(filteredData, vesselColumn);
   } else {
     displayData(filteredData);
   }
-}
-
-function displayDataWithColor(data, vesselColumn) {
-  const table = document.getElementById("dataTable");
-  table.innerHTML = "";
-  if (!data || data.length === 0) {
-    table.innerHTML = `<tr>
-      <td colspan='100%' style='border: 2px solid red; text-align: center; padding: 10px'>
-        No records found.
-      </td></tr>`;
-    return;
-  }
-  const maxValue = Math.max(
-    ...data.map((row) => parseFloat(row[vesselColumn]) || 0)
-  );
-  // console.log("Max Value for Gradient:", maxValue);
-  const headerRow = document.createElement("tr");
-  Object.keys(data[0]).forEach((header) => {
-    const th = document.createElement("th");
-    th.textContent = header;
-    headerRow.appendChild(th);
-  });
-  table.appendChild(headerRow);
-  data.forEach((row) => {
-    const tr = document.createElement("tr");
-    Object.keys(row).forEach((key) => {
-      const td = document.createElement("td");
-      td.textContent = row[key];
-      if (key === vesselColumn) {
-        const value = parseFloat(row[key]) || 0;
-        const intensity = maxValue > 0 ? value / maxValue : 0; // Avoid division by zero
-        td.style.backgroundColor = `rgba(0, 255, 0, ${intensity})`; // Green fade effect
-        // console.log(`Coloring ${value} with opacity ${intensity}`);
-      }
-      tr.appendChild(td);
-    });
-    table.appendChild(tr);
-  });
 }
 
 function resetData() {
@@ -197,4 +133,97 @@ function convertExcelDate(value) {
   }
   const date = new Date(value);
   return isNaN(date) ? null : date;
+}
+
+function formatDate(value) {
+  if (!value) return "";
+  let date = new Date(value);
+  if (isNaN(date)) {
+    date = convertExcelDate(value);
+  }
+  if (date && !isNaN(date)) {
+    let day = date.getDate().toString().padStart(2, '0');
+    let month = date.toLocaleString('en-US', { month: 'short' });
+    let year = date.getFullYear();
+    return `${day}-${month}-${year}`;
+  }
+  return value;
+}
+
+function displayData(data) {
+  updateResultsInfo(data);
+  const table = document.getElementById("dataTable");
+  table.innerHTML = "";
+  if (!data || data.length === 0) {
+    table.innerHTML = `<tr>
+      <td colspan='100%' style='border: 2px solid red; text-align: center; padding: 10px'>
+        No records found.
+      </td></tr>`;
+    return;
+  }
+  const headerRow = document.createElement("tr");
+  Object.keys(data[0]).forEach((header) => {
+    const th = document.createElement("th");
+    th.textContent = header;
+    headerRow.appendChild(th);
+  });
+  table.appendChild(headerRow);
+  data.forEach((row) => {
+    const tr = document.createElement("tr");
+    Object.keys(row).forEach((key) => {
+      const td = document.createElement("td");
+
+      if (key.toLowerCase().includes("date") || key.toLowerCase().includes("employ") || key.toLowerCase().includes("birthday")) {
+        td.textContent = formatDate(row[key]);
+      } else {
+        td.textContent = row[key];
+      }
+
+      tr.appendChild(td);
+    });
+    table.appendChild(tr);
+  });
+}
+
+function displayDataWithColor(data, vesselColumn) {
+  updateResultsInfo(data);
+  const table = document.getElementById("dataTable");
+  table.innerHTML = "";
+  if (!data || data.length === 0) {
+    table.innerHTML = `<tr>
+      <td colspan='100%' style='border: 2px solid red; text-align: center; padding: 10px'>
+        No records found.
+      </td></tr>`;
+    return;
+  }
+  const maxValue = Math.max(
+    ...data.map((row) => parseFloat(row[vesselColumn]) || 0)
+  );
+  const headerRow = document.createElement("tr");
+  Object.keys(data[0]).forEach((header) => {
+    const th = document.createElement("th");
+    th.textContent = header;
+    headerRow.appendChild(th);
+  });
+  table.appendChild(headerRow);
+  data.forEach((row) => {
+    const tr = document.createElement("tr");
+    Object.keys(row).forEach((key) => {
+      const td = document.createElement("td");
+      if (key.toLowerCase().includes("date") || key.toLowerCase().includes("employ") || key.toLowerCase().includes("birthday")) {
+        td.textContent = formatDate(row[key]);
+      } else {
+        td.textContent = row[key];
+      }
+      if (key === vesselColumn) {
+        const value = parseFloat(row[key]) || 0;
+        const intensity = maxValue > 0 ? value / maxValue : 0;
+        const hue = 240 - intensity * 240;
+        const lightness = 40 + intensity * 40;
+        td.style.backgroundColor = `hsl(${hue}, 100%, ${lightness}%)`;
+      }
+      tr.appendChild(td);
+    });
+    table.appendChild(tr);
+  });
 }
